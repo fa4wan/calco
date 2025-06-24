@@ -1,99 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Metrics Calculator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Metrics Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f8f8f8;
-      color: #333;
-      text-align: center;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #f4f6f8, #e9eff5);
+      color: #1f2937;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .calculator {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 40px;
     }
     .section {
-      width: 300px;
-      margin: 20px auto;
-      padding: 15px;
-      border-radius: 10px;
-      background-color: #fff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 30px;
+      transition: transform 0.3s ease;
+    }
+    .section:hover {
+      transform: translateY(-4px);
     }
     .section h2 {
-      margin-top: 0;
-      font-size: 20px;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 20px;
     }
     .traffic {
-      background-color: #ffe5e5;
-      border-top: 5px solid #d32f2f;
+      border-top: 6px solid #dc2626;
     }
     .profitability {
-      background-color: #e5ffe5;
-      border-top: 5px solid #388e3c;
+      border-top: 6px solid #16a34a;
     }
-    label {
-      display: block;
-      margin: 10px 0 5px;
+    .form-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 12px 0;
     }
-    input[type="number"] {
-      width: 90%;
-      padding: 5px;
-      font-size: 16px;
+    .form-group label {
+      flex: 1;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .form-group input {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background-color: #f3f4f6;
+      text-align: right;
     }
     .output {
-      background-color: #eee;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
+      margin-top: 25px;
+      padding: 15px 20px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
     }
-    #calculate {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #1976d2;
+    .output-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+      font-size: 14px;
+    }
+    .output-item span {
+      font-weight: 600;
+    }
+    #calculate, #downloadPDF {
+      display: inline-block;
+      margin: 40px 10px 20px;
+      padding: 12px 30px;
+      font-size: 16px;
+      background-color: #2563eb;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 12px;
       cursor: pointer;
-      font-size: 16px;
+      transition: background-color 0.2s;
+    }
+    #calculate:hover, #downloadPDF:hover {
+      background-color: #1d4ed8;
+    }
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 50px;
+      color: #111827;
     }
   </style>
 </head>
 <body>
-  <div class="section traffic">
-    <h2>Traffic</h2>
-    <label>CTR (%)</label>
-    <input type="number" id="ctr" value="2" step="0.01">
-    <label>CPM ($)</label>
-    <input type="number" id="cpm" value="20">
-    <label>Budget ($)</label>
-    <input type="number" id="budget" value="100000">
-    <div class="output">
-      <p><strong>CPC:</strong> $<span id="cpc"></span></p>
-      <p><strong>Clicks:</strong> <span id="clicks"></span></p>
+  <div class="container">
+    <h1>Metrics Calculator</h1>
+    <div class="calculator">
+      <div class="section traffic">
+        <h2>Traffic</h2>
+        <div class="form-group">
+          <label for="ctr">CTR (%)</label>
+          <input type="number" id="ctr" value="2" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label for="cpm">CPM ($)</label>
+          <input type="number" id="cpm" value="20" />
+        </div>
+        <div class="form-group">
+          <label for="budget">Budget ($)</label>
+          <input type="number" id="budget" value="100000" />
+        </div>
+        <div class="output">
+          <div class="output-item"><div>CPC:</div><span id="cpc"></span></div>
+          <div class="output-item"><div>Clicks:</div><span id="clicks"></span></div>
+        </div>
+      </div>
+
+      <div class="section profitability">
+        <h2>Profitability</h2>
+        <div class="form-group">
+          <label for="asp">ASP ($)</label>
+          <input type="number" id="asp" value="800" />
+        </div>
+        <div class="form-group">
+          <label for="upo">UPO</label>
+          <input type="number" id="upo" value="1" />
+        </div>
+        <div class="form-group">
+          <label for="cvr">CVR (%)</label>
+          <input type="number" id="cvr" value="3" step="0.01" />
+        </div>
+        <div class="output">
+          <div class="output-item"><div>CPS:</div><span id="cps"></span></div>
+          <div class="output-item"><div>AOV:</div><span id="aov"></span></div>
+          <div class="output-item"><div>Orders:</div><span id="orders"></span></div>
+          <div class="output-item"><div>Revenue:</div><span id="revenue"></span></div>
+          <div class="output-item"><div>ROAS:</div><span id="roas"></span></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align: center;">
+      <button id="calculate">Calculate</button>
+      <button id="downloadPDF">Download PDF</button>
     </div>
   </div>
-
-  <div class="section profitability">
-    <h2>Profitability</h2>
-    <label>ASP ($)</label>
-    <input type="number" id="asp" value="800">
-    <label>UPO</label>
-    <input type="number" id="upo" value="1">
-    <label>CVR (%)</label>
-    <input type="number" id="cvr" value="3" step="0.01">
-    <div class="output">
-      <p><strong>CPS:</strong> $<span id="cps"></span></p>
-      <p><strong>AOV:</strong> $<span id="aov"></span></p>
-      <p><strong>Orders:</strong> <span id="orders"></span></p>
-      <p><strong>Revenue:</strong> $<span id="revenue"></span></p>
-      <p><strong>ROAS:</strong> <span id="roas"></span></p>
-    </div>
-  </div>
-
-  <button id="calculate">Calculate</button>
-
-  <h2 style="margin-top: 40px; color: #1976d2;">Metrics Calculator</h2>
 
   <script>
     function calculateMetrics() {
@@ -104,7 +169,7 @@
       const cpc = cpm / (1000 * ctr);
       const clicks = budget / cpc;
 
-      document.getElementById('cpc').textContent = cpc.toFixed(2);
+      document.getElementById('cpc').textContent = `$${cpc.toFixed(2)}`;
       document.getElementById('clicks').textContent = Math.round(clicks);
 
       const asp = parseFloat(document.getElementById('asp').value);
@@ -117,15 +182,48 @@
       const cps = budget / orders;
       const roas = revenue / budget;
 
-      document.getElementById('cps').textContent = cps.toFixed(0);
-      document.getElementById('aov').textContent = aov.toFixed(0);
+      document.getElementById('cps').textContent = `$${cps.toFixed(0)}`;
+      document.getElementById('aov').textContent = `$${aov.toFixed(0)}`;
       document.getElementById('orders').textContent = Math.round(orders);
-      document.getElementById('revenue').textContent = revenue.toLocaleString();
+      document.getElementById('revenue').textContent = `$${revenue.toLocaleString()}`;
       document.getElementById('roas').textContent = roas.toFixed(1);
     }
 
     document.getElementById('calculate').addEventListener('click', calculateMetrics);
     window.onload = calculateMetrics;
+
+    document.getElementById('downloadPDF').addEventListener('click', () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFont('Inter', 'bold');
+      doc.setFontSize(18);
+      doc.text("Metrics Calculator Results", 20, 20);
+
+      doc.setFontSize(12);
+      let y = 35;
+      const addRow = (label, value) => {
+        doc.text(`${label}:`, 20, y);
+        doc.text(`${value}`, 90, y);
+        y += 8;
+      };
+
+      addRow("CTR", document.getElementById('ctr').value + "%");
+      addRow("CPM", "$" + document.getElementById('cpm').value);
+      addRow("Budget", "$" + document.getElementById('budget').value);
+      addRow("CPC", document.getElementById('cpc').textContent);
+      addRow("Clicks", document.getElementById('clicks').textContent);
+      y += 5;
+      addRow("ASP", "$" + document.getElementById('asp').value);
+      addRow("UPO", document.getElementById('upo').value);
+      addRow("CVR", document.getElementById('cvr').value + "%");
+      addRow("CPS", document.getElementById('cps').textContent);
+      addRow("AOV", document.getElementById('aov').textContent);
+      addRow("Orders", document.getElementById('orders').textContent);
+      addRow("Revenue", document.getElementById('revenue').textContent);
+      addRow("ROAS", document.getElementById('roas').textContent);
+
+      doc.save("metrics_report.pdf");
+    });
   </script>
 </body>
 </html>
