@@ -6,6 +6,7 @@
   <title>Advanced Metrics Calculator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -110,7 +111,7 @@
 <body>
   <div class="container">
     <h1>Metrics Calculator</h1>
-    <div class="calculator">
+    <div class="calculator" id="calculatorSection">
       <div class="section traffic">
         <h2>Traffic</h2>
         <div class="form-group">
@@ -192,37 +193,19 @@
     document.getElementById('calculate').addEventListener('click', calculateMetrics);
     window.onload = calculateMetrics;
 
-    document.getElementById('downloadPDF').addEventListener('click', () => {
+    document.getElementById('downloadPDF').addEventListener('click', async () => {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.setFont('Inter', 'bold');
-      doc.setFontSize(18);
-      doc.text("Metrics Calculator Results", 20, 20);
+      const calculator = document.getElementById("calculatorSection");
 
-      doc.setFontSize(12);
-      let y = 35;
-      const addRow = (label, value) => {
-        doc.text(`${label}:`, 20, y);
-        doc.text(`${value}`, 90, y);
-        y += 8;
-      };
+      const canvas = await html2canvas(calculator, { scale: 2, backgroundColor: null });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
 
-      addRow("CTR", document.getElementById('ctr').value + "%");
-      addRow("CPM", "$" + document.getElementById('cpm').value);
-      addRow("Budget", "$" + document.getElementById('budget').value);
-      addRow("CPC", document.getElementById('cpc').textContent);
-      addRow("Clicks", document.getElementById('clicks').textContent);
-      y += 5;
-      addRow("ASP", "$" + document.getElementById('asp').value);
-      addRow("UPO", document.getElementById('upo').value);
-      addRow("CVR", document.getElementById('cvr').value + "%");
-      addRow("CPS", document.getElementById('cps').textContent);
-      addRow("AOV", document.getElementById('aov').textContent);
-      addRow("Orders", document.getElementById('orders').textContent);
-      addRow("Revenue", document.getElementById('revenue').textContent);
-      addRow("ROAS", document.getElementById('roas').textContent);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      doc.save("metrics_report.pdf");
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("metrics_visual_report.pdf");
     });
   </script>
 </body>
